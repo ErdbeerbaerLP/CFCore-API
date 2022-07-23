@@ -1,0 +1,70 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version "7.0.0"
+    id 'maven-publish'
+}
+
+group 'de.erdbeerbaerlp.cfcore'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+configurations {
+    embed
+    compileOnly.extendsFrom(embed)
+}
+artifacts {
+    archives tasks.shadowJar
+}
+shadowJar {
+    classifier = ""
+    configurations = [project.configurations.embed]
+}
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testRuntimeOnly 'com.google.code.gson:gson:2.9.0'
+    embed 'com.google.code.gson:gson:2.9.0'
+}
+
+test {
+    systemProperty 'cf.apikey', project.curseforgeAPIKey
+    useJUnitPlatform()
+
+    maxHeapSize = '1G'
+}
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+javadoc {
+    options.author()
+    options.encoding = 'UTF-8'
+    options.addBooleanOption('html5', true)
+    options.addBooleanOption('Xdoclint:none', true)
+    failOnError = false
+}
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'de.erdbeerbaerlp'
+            artifactId = 'cfcore'
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            credentials {// $GRADLE_USER_HOME/gradle.properties
+                username = project.nexusUser
+                password = project.nexusPass
+            }
+            if(project.version.endsWith('-SNAPSHOT')) {
+                url = "https://repo.erdbeerbaerlp.de/repository/maven-snapshots"
+            }else{
+                url = "https://repo.erdbeerbaerlp.de/repository/maven-releases"
+            }
+        }
+    }
+}
+tasks.publish.dependsOn(tasks.build)
