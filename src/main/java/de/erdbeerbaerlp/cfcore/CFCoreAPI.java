@@ -155,6 +155,27 @@ public class CFCoreAPI {
             return null;
         }
     }
+    /**
+     * Fetches changelog from a file. It will be an HTML String
+     * @param modID ID of the mod of the file
+     * @param fileID File ID of the file to fetch changelog from
+     * @return {@link CFMod} array, or null on error
+     * @throws InvalidAPIKeyException if API Key is invalid or not set
+     */
+    public static String getChangelog(long modID, long fileID){
+        if(apiKey == null) throw new InvalidAPIKeyException();
+        try {
+            final URL url = new URL(baseURL+"mods/"+modID+"/files/"+fileID+"/changelog");
+            System.out.println(url);
+            final HttpsURLConnection urlConnection = openUrlConnection(url);
+            if(urlConnection.getResponseCode() != 200) return null;
+            final InputStreamReader reader = new InputStreamReader(urlConnection.getInputStream());
+            return JsonParser.parseReader(reader).getAsJsonObject().get("data").getAsString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private static HttpsURLConnection openUrlConnection(URL url) throws IOException {
         final HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();

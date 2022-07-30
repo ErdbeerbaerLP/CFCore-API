@@ -95,15 +95,22 @@ public class ModTest {
     @Test
     void releaseTypeTest(){
         CFCoreAPI.setApiKey(System.getProperties().getProperty("cf.apikey"));
-        final CFFile alphaFile = CFCoreAPI.getFileFromID(238222, 3894194);
-        final CFFile betaFile = CFCoreAPI.getFileFromID(238222, 3885885);
-        final CFFile releaseFile = CFCoreAPI.getFileFromID(238222, 3847103);
+        final CFFile alphaFile = CFCoreAPI.getFileFromID(324952, 3846786);
+        final CFFile betaFile = CFCoreAPI.getFileFromID(324952, 3846775);
+        final CFFile releaseFile = CFCoreAPI.getFileFromID(324952, 3508392);
         Assertions.assertNotNull(alphaFile);
         Assertions.assertNotNull(betaFile);
         Assertions.assertNotNull(releaseFile);
         Assertions.assertEquals(CFReleaseType.ALPHA, alphaFile.releaseType);
         Assertions.assertEquals(CFReleaseType.BETA, betaFile.releaseType);
         Assertions.assertEquals(CFReleaseType.RELEASE, releaseFile.releaseType);
+    }
 
+    @Test
+    void changelogTest(){
+        CFCoreAPI.setApiKey(System.getProperties().getProperty("cf.apikey"));
+        final String changelog = CFCoreAPI.getChangelog(324952, 3908725);
+        System.out.println(changelog);
+        Assertions.assertEquals("<p>1.19.1 port</p>", changelog);
     }
 }
